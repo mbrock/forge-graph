@@ -4,6 +4,12 @@
 	"private": true,
 	"type": "module",
 	"description": "Workspace for Forge graph rendering and editor integration packages.",
+	"exports": {
+		".": {
+			"import": "./packages/forge-graph/dist/forge-graph.js",
+			"types": "./packages/forge-graph/src/index.ts"
+		}
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/mbrock/forge-graph.git"
@@ -18,5 +24,15 @@
 		"compile": "bun run build",
 		"watch:forge-graph": "cd packages/forge-graph && bun run watch",
 		"watch:vsx": "cd packages/forge-fm-vsx && bun run watch"
+	},
+	"dependencies": {
+		"d3": "^7.9.0",
+		"js-yaml": "^4.1.0",
+		"perfect-arrows": "^0.3.7",
+		"spytial-core": "github:sidprasad/cnd-core#451f650",
+		"webcola": "^3.4.0"
+	},
+	"devDependencies": {
+		"@happy-dom/global-registrator": "^20.9.0"
 	}
 }

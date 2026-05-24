@@ -1,7 +1,12 @@
 {
 	"compilerOptions": {
 		"baseUrl": ".",
+		"jsx": "react-jsx",
+		"lib": ["DOM", "DOM.Iterable", "ES2022"],
+		"module": "ESNext",
 		"moduleResolution": "bundler",
+		"skipLibCheck": true,
+		"target": "ES2022",
 		"paths": {
 			"@spytial-core/*": [
 				"./node_modules/spytial-core/src/*",

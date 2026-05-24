@@ -3,11 +3,12 @@ import { DEFAULT_CND_SPEC, renderForgeGraph } from './renderer';
 export class ForgeGraphElement extends HTMLElement {
 	private readonly root: ShadowRoot;
 	private resizeObserver?: ResizeObserver;
+	private pendingRender?: Promise<void>;
 	private renderSerial = 0;
 	private _ready: Promise<void> = Promise.resolve();
 
 	static get observedAttributes(): string[] {
-		return ['src', 'cnd', 'height'];
+		return ['src', 'xml', 'cnd', 'cnd-spec', 'height', 'title'];
 	}
 
 	constructor() {
@@ -26,7 +27,6 @@ export class ForgeGraphElement extends HTMLElement {
 
 	set xml(value: string) {
 		this.setAttribute('xml', value);
-		this.scheduleRender();
 	}
 
 	get cndSpec(): string {
@@ -35,7 +35,6 @@ export class ForgeGraphElement extends HTMLElement {
 
 	set cndSpec(value: string) {
 		this.setAttribute('cnd-spec', value);
-		this.scheduleRender();
 	}
 
 	connectedCallback(): void {
@@ -52,7 +51,9 @@ export class ForgeGraphElement extends HTMLElement {
 
 	attributeChangedCallback(): void {
 		this.applyHeight();
-		this.scheduleRender();
+		if (this.isConnected) {
+			this.scheduleRender();
+		}
 	}
 
 	async render(): Promise<void> {
@@ -104,9 +105,18 @@ export class ForgeGraphElement extends HTMLElement {
 	}
 
 	private scheduleRender(): void {
-		this._ready = new Promise((resolve) => {
-			queueMicrotask(() => this.render().then(resolve, resolve));
-		});
+		if (!this.pendingRender) {
+			this.pendingRender = new Promise((resolve) => {
+				queueMicrotask(() => {
+					this.render()
+						.then(resolve, resolve)
+						.finally(() => {
+							this.pendingRender = undefined;
+						});
+				});
+			});
+		}
+		this._ready = this.pendingRender;
 	}
 
 	private frame(): HTMLElement {

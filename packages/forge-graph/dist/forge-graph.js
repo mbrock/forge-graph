@@ -3,25 +3,43 @@ var __getProtoOf = Object.getPrototypeOf;
 var __defProp = Object.defineProperty;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+function __accessProp(key) {
+  return this[key];
+}
+var __toESMCache_node;
+var __toESMCache_esm;
 var __toESM = (mod, isNodeMode, target) => {
+  var canCache = mod != null && typeof mod === "object";
+  if (canCache) {
+    var cache = isNodeMode ? __toESMCache_node ??= new WeakMap : __toESMCache_esm ??= new WeakMap;
+    var cached = cache.get(mod);
+    if (cached)
+      return cached;
+  }
   target = mod != null ? __create(__getProtoOf(mod)) : {};
   const to = isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target;
   for (let key of __getOwnPropNames(mod))
     if (!__hasOwnProp.call(to, key))
       __defProp(to, key, {
-        get: () => mod[key],
+        get: __accessProp.bind(mod, key),
         enumerable: true
       });
+  if (canCache)
+    cache.set(mod, to);
   return to;
 };
 var __commonJS = (cb, mod) => () => (mod || cb((mod = { exports: {} }).exports, mod), mod.exports);
+var __returnValue = (v) => v;
+function __exportSetter(name, newValue) {
+  this[name] = __returnValue.bind(null, newValue);
+}
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, {
       get: all[name],
       enumerable: true,
       configurable: true,
-      set: (newValue) => all[name] = () => newValue
+      set: __exportSetter.bind(all, name)
     });
 };
 
@@ -23226,7 +23244,7 @@ var require_simple_graph_query_bundle = __commonJS((exports, module) => {
           }
           var escapeSequencesRegExp = /[\x00-\x08\x0b\x0c\x0e-\x1f]/g;
           var meta = ["\\u0000", "\\u0001", "\\u0002", "\\u0003", "\\u0004", "\\u0005", "\\u0006", "\\u0007", "\\b", "", "", "\\u000b", "\\f", "", "\\u000e", "\\u000f", "\\u0010", "\\u0011", "\\u0012", "\\u0013", "\\u0014", "\\u0015", "\\u0016", "\\u0017", "\\u0018", "\\u0019", "\\u001a", "\\u001b", "\\u001c", "\\u001d", "\\u001e", "\\u001f"];
-          var escapeFn = function escapeFn(str) {
+          var escapeFn = function escapeFn2(str) {
             return meta[str.charCodeAt(0)];
           };
           var warned = false;
@@ -23422,9 +23440,9 @@ var require_simple_graph_query_bundle = __commonJS((exports, module) => {
               });
             }
           };
-          var Comparison = /* @__PURE__ */ _createClass(function Comparison(obj, keys, actual) {
+          var Comparison = /* @__PURE__ */ _createClass(function Comparison2(obj, keys, actual) {
             var _this = this;
-            _classCallCheck(this, Comparison);
+            _classCallCheck(this, Comparison2);
             keys.forEach(function(key) {
               if (key in obj) {
                 if (actual !== undefined && typeof actual[key] === "string" && isRegExp(obj[key]) && RegExpPrototypeTest(obj[key], actual[key])) {
@@ -23822,7 +23840,7 @@ var require_simple_graph_query_bundle = __commonJS((exports, module) => {
           }
           function _wrapNativeSuper(Class) {
             var _cache = typeof Map === "function" ? new Map : undefined;
-            _wrapNativeSuper = function _wrapNativeSuper(Class2) {
+            _wrapNativeSuper = function _wrapNativeSuper2(Class2) {
               if (Class2 === null || !_isNativeFunction(Class2))
                 return Class2;
               if (typeof Class2 !== "function") {
@@ -23845,7 +23863,7 @@ var require_simple_graph_query_bundle = __commonJS((exports, module) => {
             if (_isNativeReflectConstruct()) {
               _construct = Reflect.construct.bind();
             } else {
-              _construct = function _construct(Parent2, args2, Class2) {
+              _construct = function _construct2(Parent2, args2, Class2) {
                 var a = [null];
                 a.push.apply(a, args2);
                 var Constructor = Function.bind.apply(Parent2, a);
@@ -23875,14 +23893,14 @@ var require_simple_graph_query_bundle = __commonJS((exports, module) => {
             return Function.toString.call(fn).indexOf("[native code]") !== -1;
           }
           function _setPrototypeOf(o, p) {
-            _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o2, p2) {
+            _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
               o2.__proto__ = p2;
               return o2;
             };
             return _setPrototypeOf(o, p);
           }
           function _getPrototypeOf(o) {
-            _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o2) {
+            _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
               return o2.__proto__ || Object.getPrototypeOf(o2);
             };
             return _getPrototypeOf(o);
@@ -24323,7 +24341,7 @@ should equal
               _setPrototypeOf(subClass, superClass);
           }
           function _setPrototypeOf(o, p) {
-            _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o2, p2) {
+            _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
               o2.__proto__ = p2;
               return o2;
             };
@@ -24371,7 +24389,7 @@ should equal
             }
           }
           function _getPrototypeOf(o) {
-            _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o2) {
+            _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
               return o2.__proto__ || Object.getPrototypeOf(o2);
             };
             return _getPrototypeOf(o);
@@ -24582,14 +24600,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }, _typeof(o);
           }
           var regexFlagsSupported = /a/g.flags !== undefined;
-          var arrayFromSet = function arrayFromSet(set) {
+          var arrayFromSet = function arrayFromSet2(set) {
             var array = [];
             set.forEach(function(value) {
               return array.push(value);
             });
             return array;
           };
-          var arrayFromMap = function arrayFromMap(map) {
+          var arrayFromMap = function arrayFromMap2(map) {
             var array = [];
             map.forEach(function(value, key) {
               return array.push([key, value]);
@@ -25372,7 +25390,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           /*! is-callable */
           var toStr = Object.prototype.toString;
           var hasOwnProperty = Object.prototype.hasOwnProperty;
-          var forEachArray = function forEachArray(array, iterator, receiver) {
+          var forEachArray = function forEachArray2(array, iterator, receiver) {
             for (var i = 0, len = array.length;i < len; i++) {
               if (hasOwnProperty.call(array, i)) {
                 if (receiver == null) {
@@ -25383,7 +25401,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           };
-          var forEachString = function forEachString(string, iterator, receiver) {
+          var forEachString = function forEachString2(string, iterator, receiver) {
             for (var i = 0, len = string.length;i < len; i++) {
               if (receiver == null) {
                 iterator(string.charAt(i), i, string);
@@ -25392,7 +25410,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           };
-          var forEachObject = function forEachObject(object, iterator, receiver) {
+          var forEachObject = function forEachObject2(object, iterator, receiver) {
             for (var k in object) {
               if (hasOwnProperty.call(object, k)) {
                 if (receiver == null) {
@@ -25431,7 +25449,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           var toStr = Object.prototype.toString;
           var max = Math.max;
           var funcType = "[object Function]";
-          var concatty = function concatty(a, b) {
+          var concatty = function concatty2(a, b) {
             var arr = [];
             for (var i = 0;i < a.length; i += 1) {
               arr[i] = a[i];
@@ -25441,7 +25459,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             return arr;
           };
-          var slicy = function slicy(arrLike, offset) {
+          var slicy = function slicy2(arrLike, offset) {
             var arr = [];
             for (var i = offset || 0, j = 0;i < arrLike.length; i += 1, j += 1) {
               arr[j] = arrLike[i];
@@ -25482,7 +25500,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             bound = Function("binder", "return function (" + joiny(boundArgs, ",") + "){ return binder.apply(this,arguments); }")(binder);
             if (target.prototype) {
-              var Empty = function Empty() {};
+              var Empty = function Empty2() {};
               Empty.prototype = target.prototype;
               bound.prototype = new Empty;
               Empty.prototype = null;
@@ -25663,7 +25681,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               INTRINSICS["%Error.prototype%"] = errorProto;
             }
           }
-          var doEval = function doEval(name) {
+          var doEval = function doEval2(name) {
             var value;
             if (name === "%AsyncFunction%") {
               value = getEvalledConstructor("async function () {}");
@@ -25672,12 +25690,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             } else if (name === "%AsyncGeneratorFunction%") {
               value = getEvalledConstructor("async function* () {}");
             } else if (name === "%AsyncGenerator%") {
-              var fn = doEval("%AsyncGeneratorFunction%");
+              var fn = doEval2("%AsyncGeneratorFunction%");
               if (fn) {
                 value = fn.prototype;
               }
             } else if (name === "%AsyncIteratorPrototype%") {
-              var gen = doEval("%AsyncGenerator%");
+              var gen = doEval2("%AsyncGenerator%");
               if (gen && getProto) {
                 value = getProto(gen.prototype);
               }
@@ -25750,7 +25768,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           var $exec = bind.call($call, RegExp.prototype.exec);
           var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
           var reEscapeChar = /\\(\\)?/g;
-          var stringToPath = function stringToPath(string) {
+          var stringToPath = function stringToPath2(string) {
             var first = $strSlice(string, 0, 1);
             var last = $strSlice(string, -1);
             if (first === "%" && last !== "%") {
@@ -25764,7 +25782,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
             return result;
           };
-          var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
+          var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
             var intrinsicName = name;
             var alias;
             if (hasOwn(LEGACY_ALIASES, intrinsicName)) {
@@ -25911,7 +25929,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             \********************************************************/
           var $defineProperty = __webpack_require__2("./node_modules/es-define-property/index.js");
           /*! es-define-property */
-          var hasPropertyDescriptors = function hasPropertyDescriptors() {
+          var hasPropertyDescriptors = function hasPropertyDescriptors2() {
             return !!$defineProperty;
           };
           hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
@@ -26239,7 +26257,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           /*!***********************************************!*\
             !*** ./node_modules/is-nan/implementation.js ***!
             \***********************************************/
-          module2.exports = function isNaN(value) {
+          module2.exports = function isNaN2(value) {
             return value !== value;
           };
         },
@@ -27045,7 +27063,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             function unicodeWords(string) {
               return string.match(reUnicodeWord) || [];
             }
-            var runInContext = function runInContext(context) {
+            var runInContext = function runInContext2(context) {
               context = context == null ? root : _.defaults(root.Object(), context, _.pick(root, contextProps));
               var { Array: Array2, Date: Date2, Error: Error2, Function: Function2, Math: Math2, Object: Object2, RegExp: RegExp2, String: String2, TypeError: TypeError2 } = context;
               var arrayProto = Array2.prototype, funcProto = Function2.prototype, objectProto = Object2.prototype;
@@ -31558,7 +31576,7 @@ __p += '`;
               lodash.replace = replace;
               lodash.result = result;
               lodash.round = round;
-              lodash.runInContext = runInContext;
+              lodash.runInContext = runInContext2;
               lodash.sample = sample;
               lodash.size = size;
               lodash.snakeCase = snakeCase;
@@ -31789,7 +31807,7 @@ __p += '`;
           /*!***********************************************!*\
             !*** ./node_modules/math-intrinsics/isNaN.js ***!
             \***********************************************/
-          module2.exports = Number.isNaN || function isNaN(a) {
+          module2.exports = Number.isNaN || function isNaN2(a) {
             return a !== a;
           };
         },
@@ -32649,7 +32667,7 @@ __p += '`;
             \***********************************/
           var process = __webpack_require__2("./node_modules/process/browser.js");
           /*! process/browser */
-          var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors || function getOwnPropertyDescriptors(obj) {
+          var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors || function getOwnPropertyDescriptors2(obj) {
             var keys = Object.keys(obj);
             var descriptors = {};
             for (var i = 0;i < keys.length; i++) {
@@ -79424,7 +79442,7 @@ function appendRound2(digits2) {
   if (d !== cacheDigits) {
     const k = 10 ** d;
     cacheDigits = d;
-    cacheAppend = function append(strings) {
+    cacheAppend = function append3(strings) {
       let i2 = 1;
       this._ += strings[0];
       for (const j = strings.length;i2 < j; ++i2) {
@@ -83636,7 +83654,7 @@ var inferno = ramp(colors_default("00000401000501010601010802010a02020c02020e030
 var plasma = ramp(colors_default("0d088710078813078916078a19068c1b068d1d068e20068f2206902406912605912805922a05932c05942e05952f059631059733059735049837049938049a3a049a3c049b3e049c3f049c41049d43039e44039e46039f48039f4903a04b03a14c02a14e02a25002a25102a35302a35502a45601a45801a45901a55b01a55c01a65e01a66001a66100a76300a76400a76600a76700a86900a86a00a86c00a86e00a86f00a87100a87201a87401a87501a87701a87801a87a02a87b02a87d03a87e03a88004a88104a78305a78405a78606a68707a68808a68a09a58b0aa58d0ba58e0ca48f0da4910ea3920fa39410a29511a19613a19814a099159f9a169f9c179e9d189d9e199da01a9ca11b9ba21d9aa31e9aa51f99a62098a72197a82296aa2395ab2494ac2694ad2793ae2892b02991b12a90b22b8fb32c8eb42e8db52f8cb6308bb7318ab83289ba3388bb3488bc3587bd3786be3885bf3984c03a83c13b82c23c81c33d80c43e7fc5407ec6417dc7427cc8437bc9447aca457acb4679cc4778cc4977cd4a76ce4b75cf4c74d04d73d14e72d24f71d35171d45270d5536fd5546ed6556dd7566cd8576bd9586ada5a6ada5b69db5c68dc5d67dd5e66de5f65de6164df6263e06363e16462e26561e26660e3685fe4695ee56a5de56b5de66c5ce76e5be76f5ae87059e97158e97257ea7457eb7556eb7655ec7754ed7953ed7a52ee7b51ef7c51ef7e50f07f4ff0804ef1814df1834cf2844bf3854bf3874af48849f48948f58b47f58c46f68d45f68f44f79044f79143f79342f89441f89540f9973ff9983ef99a3efa9b3dfa9c3cfa9e3bfb9f3afba139fba238fca338fca537fca636fca835fca934fdab33fdac33fdae32fdaf31fdb130fdb22ffdb42ffdb52efeb72dfeb82cfeba2cfebb2bfebd2afebe2afec029fdc229fdc328fdc527fdc627fdc827fdca26fdcb26fccd25fcce25fcd025fcd225fbd324fbd524fbd724fad824fada24f9dc24f9dd25f8df25f8e125f7e225f7e425f6e626f6e826f5e926f5eb27f4ed27f3ee27f3f027f2f227f1f426f1f525f0f724f0f921"));
 // ../../node_modules/d3-shape/src/constant.js
 function constant_default10(x3) {
-  return function constant() {
+  return function constant2() {
     return x3;
   };
 }
@@ -86503,10 +86521,11 @@ function escapeHtml2(value) {
 class ForgeGraphElement extends HTMLElement {
   root;
   resizeObserver;
+  pendingRender;
   renderSerial = 0;
   _ready = Promise.resolve();
   static get observedAttributes() {
-    return ["src", "cnd", "height"];
+    return ["src", "xml", "cnd", "cnd-spec", "height", "title"];
   }
   constructor() {
     super();
@@ -86521,14 +86540,12 @@ class ForgeGraphElement extends HTMLElement {
   }
   set xml(value) {
     this.setAttribute("xml", value);
-    this.scheduleRender();
   }
   get cndSpec() {
     return this.getAttribute("cnd-spec") || "";
   }
   set cndSpec(value) {
     this.setAttribute("cnd-spec", value);
-    this.scheduleRender();
   }
   connectedCallback() {
     this.applyHeight();
@@ -86542,7 +86559,9 @@ class ForgeGraphElement extends HTMLElement {
   }
   attributeChangedCallback() {
     this.applyHeight();
-    this.scheduleRender();
+    if (this.isConnected) {
+      this.scheduleRender();
+    }
   }
   async render() {
     const serial = ++this.renderSerial;
@@ -86588,9 +86607,16 @@ class ForgeGraphElement extends HTMLElement {
     }
   }
   scheduleRender() {
-    this._ready = new Promise((resolve) => {
-      queueMicrotask(() => this.render().then(resolve, resolve));
-    });
+    if (!this.pendingRender) {
+      this.pendingRender = new Promise((resolve) => {
+        queueMicrotask(() => {
+          this.render().then(resolve, resolve).finally(() => {
+            this.pendingRender = undefined;
+          });
+        });
+      });
+    }
+    this._ready = this.pendingRender;
   }
   frame() {
     const frame2 = this.root.querySelector(".frame");
@@ -86626,7 +86652,7 @@ class ForgeGraphElement extends HTMLElement {
     return this.cndSpec || cndChild?.textContent || DEFAULT_CND_SPEC;
   }
 }
-function defineForgeGraphElement2(name = "forge-graph") {
+function defineForgeGraphElement(name = "forge-graph") {
   if (!customElements.get(name)) {
     customElements.define(name, ForgeGraphElement);
   }
@@ -86671,17 +86697,16 @@ function elementCss() {
 function escapeHtml3(value) {
   return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
-
 // src/index.ts
 defineForgeGraphElement();
 export {
   solveForgeGraphLayout,
   renderForgeGraph,
   forgeGraphSvgCss,
-  defineForgeGraphElement2 as defineForgeGraphElement,
+  defineForgeGraphElement,
   ForgeGraphElement,
   DEFAULT_CND_SPEC
 };
 
-//# debugId=AEC10468591B657664756E2164756E21
+//# debugId=A296405DA2036D5264756E2164756E21
 //# sourceMappingURL=forge-graph.js.map
