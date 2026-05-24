@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"moduleResolution": "bundler",
+		"paths": {
+			"@spytial-core/*": [
+				"./node_modules/spytial-core/src/*",
+				"../../node_modules/spytial-core/src/*"
+			]
+		}
+	}
+}

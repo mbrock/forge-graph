@@ -1,1 +1,0 @@
-{"root":["./src/encryption-util.ts","./src/extension.ts","./src/forge-chat-participant.ts","./src/forge-docs.ts","./src/forge-runner.ts","./src/logger.ts","./src/test/completion.test.ts","./src/test/diagnostics.test.ts","./src/test/helper.ts","./src/test/index.ts","./src/test/lsp.test.ts","./src/test/runtest.ts"],"version":"5.9.3"}

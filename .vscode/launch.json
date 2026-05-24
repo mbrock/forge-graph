@@ -7,12 +7,9 @@
 			"request": "launch",
 			"name": "Launch Client",
 			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}"],
-			"outFiles": ["${workspaceRoot}/client/out/**/*.js"],
-			"preLaunchTask": {
-				"type": "npm",
-				"script": "watch"
-			},
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}/packages/forge-fm-vsx"],
+			"outFiles": ["${workspaceFolder}/packages/forge-fm-vsx/client/out/**/*.js"],
+			"preLaunchTask": "watch extension",
 			"envFile": "${workspaceFolder}/.env"
 		},
 		{
@@ -21,7 +18,7 @@
 			"name": "Attach to Server",
 			"port": 6009,
 			"restart": true,
-			"outFiles": ["${workspaceRoot}/server/out/**/*.js"],
+			"outFiles": ["${workspaceFolder}/packages/forge-fm-vsx/server/out/**/*.js"],
 			"envFile": "${workspaceFolder}/.env"
 		},
 		{
@@ -30,11 +27,11 @@
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceRoot}",
-				"--extensionTestsPath=${workspaceRoot}/client/out/test/index",
-				"${workspaceRoot}/client/testFixture"
+				"--extensionDevelopmentPath=${workspaceFolder}/packages/forge-fm-vsx",
+				"--extensionTestsPath=${workspaceFolder}/packages/forge-fm-vsx/client/out/test/index",
+				"${workspaceFolder}/packages/forge-fm-vsx/client/testFixture"
 			],
-			"outFiles": ["${workspaceRoot}/client/out/test/**/*.js"],
+			"outFiles": ["${workspaceFolder}/packages/forge-fm-vsx/client/out/test/**/*.js"],
 			// Remove the "target" property
 		}
 	],

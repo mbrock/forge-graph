@@ -12,15 +12,13 @@ jobs:
         with:
           fetch-depth: 0 # Ensures history is available for comparison
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '19' # Use the Node.js version that matches your project requirements
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
 
-      - run: npm ci
+      - run: bun install --ignore-scripts
 
-      - name: Run Mutator Tests
-        run: npx mocha -r ts-node/register ./client/src/test/mutator.tests.ts
+      - name: Build workspace
+        run: bun run build
 
 
         

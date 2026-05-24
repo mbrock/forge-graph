@@ -2,8 +2,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "npm",
-			"script": "compile",
+			"label": "compile extension",
+			"type": "shell",
+			"command": "bun run build:vsx",
 			"group": "build",
 			"presentation": {
 				"panel": "dedicated",
@@ -14,8 +15,9 @@
 			]
 		},
 		{
-			"type": "npm",
-			"script": "watch",
+			"label": "watch extension",
+			"type": "shell",
+			"command": "cd packages/forge-fm-vsx && bun run watch",
 			"isBackground": true,
 			"group": {
 				"kind": "build",

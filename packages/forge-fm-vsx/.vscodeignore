@@ -1,0 +1,43 @@
+# Development files
+.vscode/**
+.vscode-test/**
+.github/**
+**/*.ts
+!client/src/encryption-util.ts
+!scripts/file-encryptor.ts
+**/*.map
+.gitignore
+.eslintrc.json
+
+# Build files - IMPORTANT: Include compiled output!
+**/tsconfig.json
+**/tsconfig.base.json
+
+# Test files
+**/test/**
+**/testFixture/**
+client/src/test/**
+scripts/e2e.sh
+
+# Documentation
+contributing.md
+.travis.yml
+docs/**
+!docs/README.md
+
+# ANTLR grammar source files (compiled output is in src/parser and needed!)
+server/grammars/**/*.g4
+server/grammars/**/*.tokens
+server/grammars/**/*.interp
+
+# Scripts
+scripts/**
+
+# BUT KEEP THESE ESSENTIAL FILES:
+# - client/out/** (compiled extension code)
+# - server/out/** (compiled language server code)
+# - server/src/parser/grammars/** (ANTLR compiled parser - CRITICAL for LSP!)
+# These are automatically included since we exclude *.ts but not *.js
+!server/out/**
+!client/out/**
+!server/src/parser/**

@@ -5,7 +5,7 @@ const { join } = require('path');
 const getPackageVersion = (branch) => {
 
 
-  const packageJsonPath = 'package.json';
+  const packageJsonPath = 'packages/forge-fm-vsx/package.json';
   const package_contents = execSync(`git show ${branch}:${packageJsonPath}`).toString().trim();
   const packageJson = JSON.parse(package_contents);
   //console.log(`Version: ${packageJson.version}`);

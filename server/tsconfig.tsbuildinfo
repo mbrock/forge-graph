@@ -1,1 +1,0 @@
-{"root":["./src/server.ts","./src/symbols.ts","./src/parser/grammars/forgelexer.ts","./src/parser/grammars/forgelistener.ts","./src/parser/grammars/forgeparser.ts","./src/parser/grammars/forgevisitor.ts"],"version":"5.9.3"}

@@ -8,12 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 19
-      - run: npm ci
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --ignore-scripts
+      - run: bun run build
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v0
         with:
+          packagePath: packages/forge-fm-vsx
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com

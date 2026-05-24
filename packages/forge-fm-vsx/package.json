@@ -1,0 +1,266 @@
+{
+	"name": "forge-fm",
+	"description": "Editor support for Forge FM",
+	"author": "Siddhartha Prasad",
+	"license": "MIT",
+	"version": "0.1.0",
+	"repository": {
+		"type": "git",
+		"url": ""
+	},
+	"publisher": "SiddharthaPrasad",
+	"categories": [],
+	"keywords": [
+		"forge",
+		"alloy"
+	],
+	"icon": "client/images/forge-logo.png",
+	"engines": {
+		"vscode": "^1.93.0"
+	},
+	"activationEvents": [
+		"onLanguage:forge",
+		"onCommand:forge.openCndLayoutSpike"
+	],
+	"main": "./client/out/extension",
+	"contributes": {
+		"chatParticipants": [
+			{
+				"id": "forge-fm.forge-assistant",
+				"fullName": "Forge Assistant",
+				"name": "forge",
+				"description": "Ask questions about the Forge modeling language, get help with syntax, debug your models, and explore documentation.",
+				"isSticky": true,
+				"commands": [
+					{
+						"name": "docs",
+						"description": "Look up Forge documentation for a specific topic"
+					},
+					{
+						"name": "explain",
+						"description": "Explain Forge code or concepts in your current file"
+					}
+				]
+			}
+		],
+		"languages": [
+			{
+				"id": "forge",
+				"aliases": [
+					"Forge",
+					"forge"
+				],
+				"extensions": [
+					".frg"
+				],
+				"configuration": "./client/language-configuration.json",
+				"icon": {
+					"light": "./client/images/forge-logo.png",
+					"dark": "./client/images/forge-logo.png"
+				}
+			}
+		],
+		"grammars": [
+			{
+				"language": "forge",
+				"scopeName": "source.forge",
+				"path": "./client/syntaxes/forge.tmLanguage.json"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Example configuration",
+			"properties": {
+				"forgeLanguageServer.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 100,
+					"description": "Controls the maximum number of problems produced by the server."
+				},
+				"forgeLanguageServer.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "messages",
+					"description": "Traces the communication between VS Code and the language server."
+				},
+				"forge.racketPath": {
+					"scope": "resource",
+					"type": "string",
+					"default": "",
+					"description": "Path to Racket executable. Leave empty to auto-detect."
+				},
+				"forge.minVersion": {
+					"scope": "resource",
+					"type": "string",
+					"default": "3.3.0",
+					"description": "Minimum version of Forge required to run this extension."
+				},
+				"forge.clearOutputBeforeRun": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "If true, clear the Forge Output channel before each run. Disable to keep a running log."
+				},
+				"forge.runOnSave": {
+					"scope": "resource",
+					"type": "boolean",
+					"default": false,
+					"description": "If true, automatically run the active Forge file whenever it is saved."
+				},
+				"forge.bunPath": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Path to the Bun executable. Leave empty to auto-detect common Bun install locations."
+				},
+				"forge.cndWebviewRunBunWatch": {
+					"scope": "window",
+					"type": "boolean",
+					"default": false,
+					"description": "If true, start Bun's watch build for the CnD webview when the layout pane opens."
+				},
+				"forge.cndWebviewAutoReload": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "If true, automatically reload the CnD layout pane when the bundled webview script changes."
+				},
+				"forge.cndWebviewScriptUrl": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Optional development script URL for the CnD webview. Leave empty to load the bundled webview asset."
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "forge.runFile",
+				"title": "Run Forge",
+				"icon": {
+					"light": "./client/images/run.svg",
+					"dark": "./client/images/run.svg"
+				}
+			},
+			{
+				"command": "forge.continueRun",
+				"title": "Continue Forge Run",
+				"icon": "$(debug-continue)"
+			},
+			{
+				"command": "forge.stopRun",
+				"title": "Stop Forge",
+				"icon": {
+					"light": "./client/images/stop.svg",
+					"dark": "./client/images/stop.svg"
+				}
+			},
+			{
+				"command": "forge.enableLogging",
+				"title": "Enable Logging",
+				"icon": "$(eye-closed)"
+			},
+			{
+				"command": "forge.disableLogging",
+				"title": "Disable Logging",
+				"icon": "$(eye)"
+			},
+			{
+				"command": "forge.openDocumentation",
+				"title": "Forge Docs",
+				"icon": "$(book)"
+			},
+			{
+				"command": "forge.openCndLayoutSpike",
+				"category": "Forge",
+				"title": "Open CnD Layout Spike",
+				"icon": "$(graph)"
+			},
+			{
+				"command": "forge.showOutput",
+				"title": "Show Forge Output",
+				"icon": "$(output)"
+			}
+		],
+		"menus": {
+			"editor/title": [
+				{
+					"when": "editorLangId == forge",
+					"command": "forge.runFile",
+					"group": "navigation@0"
+				},
+				{
+					"when": "editorLangId == forge",
+					"command": "forge.stopRun",
+					"group": "navigation@1"
+				},
+				{
+					"when": "editorLangId == forge",
+					"command": "forge.continueRun",
+					"group": "navigation@2"
+				},
+				{
+					"command": "forge.enableLogging",
+					"when": "!forge.isLoggingEnabled && (editorLangId == forge)",
+					"group": "navigation@3"
+				},
+				{
+					"when": "forge.isLoggingEnabled && (editorLangId == forge)",
+					"command": "forge.disableLogging",
+					"group": "navigation@3"
+				},
+				{
+					"command": "forge.openDocumentation",
+					"when": "editorLangId == forge",
+					"group": "navigation@4"
+				},
+				{
+					"command": "forge.openCndLayoutSpike",
+					"when": "editorLangId == forge",
+					"group": "navigation@5"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "bun run compile",
+		"compile": "tsc -b && bun run build:bun",
+		"build:webview": "bun build ./client/webview/cnd-spike-webview.ts --outdir ./client/out/webview --target=browser --format=esm --sourcemap=linked",
+		"build:forge-graph": "cd ../forge-graph && bun run build",
+		"watch:webview": "bun build ./client/webview/cnd-spike-webview.ts --outdir ./client/out/webview --target=browser --format=esm --sourcemap=linked --watch --no-clear-screen",
+		"watch:forge-graph": "cd ../forge-graph && bun run watch",
+		"build:bun": "bun build ./client/src/extension.ts --outdir ./client/out --target=node --format=cjs --external=vscode --external=vscode-languageclient/node --sourcemap=linked && bun run build:webview && bun run build:forge-graph",
+		"watch": "sh -c 'trap \"kill 0\" EXIT; bun run watch:webview & tsc -b -w'",
+		"lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
+		"postinstall": "cd client && bun install && cd ../server && bun install && cd ..",
+		"test": "sh ./scripts/e2e.sh"
+	},
+	"devDependencies": {
+		"@types/mocha": "^8.2.2",
+		"@types/node": "^18.0.0",
+		"@types/uuid": "^8.3.4",
+		"@typescript-eslint/eslint-plugin": "^4.23.0",
+		"@typescript-eslint/parser": "^4.23.0",
+		"@vscode/vsce": "^2.24.0",
+		"eslint": "^7.26.0",
+		"mocha": "^11.7.5",
+		"typescript": "^5.3.3"
+	},
+	"dependencies": {
+		"@firebase/auth": "^0.21.0",
+		"execa": "^9.5.2",
+		"firebase": "^12.7.0",
+		"firebase-admin": "^13.6.0",
+		"glob": "^8.1.0",
+		"perfect-arrows": "^0.3.7",
+		"ts-node": "^10.9.2",
+		"uuid": "^8.3.2",
+		"vscode-languageserver": "^9.0.1",
+		"vscode-languageserver-textdocument": "^1.0.11"
+	}
+}
