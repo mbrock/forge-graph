@@ -8,7 +8,7 @@ export class ForgeGraphElement extends HTMLElement {
 	private _ready: Promise<void> = Promise.resolve();
 
 	static get observedAttributes(): string[] {
-		return ['src', 'xml', 'cnd', 'cnd-spec', 'height', 'title'];
+		return ['src', 'xml', 'cnd', 'cnd-spec', 'height', 'layout-height', 'title'];
 	}
 
 	constructor() {
@@ -68,12 +68,12 @@ export class ForgeGraphElement extends HTMLElement {
 			const [xml, cnd] = await Promise.all([this.resolveXml(), this.resolveCnd()]);
 			const rect = this.getBoundingClientRect();
 			const width = Math.max(320, Math.round(rect.width || 800));
-			const height = Math.max(240, Math.round(rect.height || Number(this.getAttribute('height')) || 480));
+			const layoutHeight = Math.max(240, Math.round(Number(this.getAttribute('layout-height')) || Number(this.getAttribute('height')) || width * 0.56));
 			const result = await renderForgeGraph({
 				xml,
 				cnd,
 				width,
-				height,
+				layoutHeight,
 				title: this.getAttribute('title') || 'Forge graph',
 			});
 
@@ -130,7 +130,9 @@ export class ForgeGraphElement extends HTMLElement {
 	private applyHeight(): void {
 		const height = this.getAttribute('height');
 		if (height) {
-			this.style.minHeight = /^\d+$/.test(height) ? `${height}px` : height;
+			this.style.height = /^\d+$/.test(height) ? `${height}px` : height;
+		} else {
+			this.style.removeProperty('height');
 		}
 	}
 
@@ -178,12 +180,9 @@ function elementCss(): string {
 		:host {
 			background: transparent;
 			display: block;
-			min-height: 480px;
-			overflow: hidden;
+			overflow: visible;
 		}
 		.frame {
-			height: 100%;
-			min-height: inherit;
 			position: relative;
 			width: 100%;
 		}
@@ -192,9 +191,8 @@ function elementCss(): string {
 			color: #666;
 			display: flex;
 			font: 12px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			inset: 0;
 			justify-content: center;
-			position: absolute;
+			min-height: 240px;
 		}
 		.status.error {
 			color: #b3261e;

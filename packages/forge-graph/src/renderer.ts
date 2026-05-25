@@ -16,6 +16,7 @@ export interface ForgeGraphRenderInput {
 	cnd?: string;
 	width?: number;
 	height?: number;
+	layoutHeight?: number;
 	title?: string;
 }
 
@@ -101,7 +102,7 @@ export async function solveForgeGraphLayout(input: ForgeGraphRenderInput): Promi
 	}
 
 	const layoutWidth = Math.max(320, Math.round(input.width || 1200));
-	const layoutHeight = Math.max(240, Math.round(input.height || 800));
+	const layoutHeight = Math.max(240, Math.round(input.layoutHeight || input.height || layoutWidth * 0.56));
 	const webcolaLayout = await new WebColaTranslator().translate(layoutResult.layout, layoutWidth, layoutHeight);
 	for (const node of webcolaLayout.nodes as any[]) {
 		const display = nodeDisplay(node);
@@ -142,7 +143,7 @@ export async function solveForgeGraphLayout(input: ForgeGraphRenderInput): Promi
 }
 
 function renderForgeGraphSvg(layout: SolvedForgeGraphLayout, bounds: BoundsBox, title = 'Forge graph'): string {
-	return `<svg class="forge-graph-svg" viewBox="${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}" role="img" aria-label="${escapeHtml(title)}" xmlns="http://www.w3.org/2000/svg">
+	return `<svg class="forge-graph-svg" width="${bounds.width}" height="${bounds.height}" viewBox="${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}" role="img" aria-label="${escapeHtml(title)}" xmlns="http://www.w3.org/2000/svg">
 	<style>${forgeGraphSvgCss()}</style>
 	<g class="edges">${renderEdges(layout)}</g>
 	<g class="nodes">${renderNodes(layout)}</g>
@@ -294,7 +295,7 @@ export function forgeGraphSvgCss(): string {
 			color: #141414;
 			display: block;
 			font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			height: 100%;
+			height: auto;
 			width: 100%;
 		}
 		.edge {

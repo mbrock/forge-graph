@@ -86169,7 +86169,7 @@ async function solveForgeGraphLayout(input) {
     throw new Error(`Selector errors: ${layoutResult.selectorErrors.map((error) => error.message ?? String(error)).join("; ")}`);
   }
   const layoutWidth = Math.max(320, Math.round(input.width || 1200));
-  const layoutHeight = Math.max(240, Math.round(input.height || 800));
+  const layoutHeight = Math.max(240, Math.round(input.layoutHeight || input.height || layoutWidth * 0.56));
   const webcolaLayout = await new WebColaTranslator().translate(layoutResult.layout, layoutWidth, layoutHeight);
   for (const node of webcolaLayout.nodes) {
     const display = nodeDisplay(node);
@@ -86196,7 +86196,7 @@ async function solveForgeGraphLayout(input) {
   };
 }
 function renderForgeGraphSvg(layout2, bounds, title = "Forge graph") {
-  return `<svg class="forge-graph-svg" viewBox="${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}" role="img" aria-label="${escapeHtml2(title)}" xmlns="http://www.w3.org/2000/svg">
+  return `<svg class="forge-graph-svg" width="${bounds.width}" height="${bounds.height}" viewBox="${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}" role="img" aria-label="${escapeHtml2(title)}" xmlns="http://www.w3.org/2000/svg">
 	<style>${forgeGraphSvgCss()}</style>
 	<g class="edges">${renderEdges(layout2)}</g>
 	<g class="nodes">${renderNodes(layout2)}</g>
@@ -86321,7 +86321,7 @@ function forgeGraphSvgCss() {
 			color: #141414;
 			display: block;
 			font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			height: 100%;
+			height: auto;
 			width: 100%;
 		}
 		.edge {
@@ -86577,7 +86577,7 @@ class ForgeGraphElement extends HTMLElement {
   renderSerial = 0;
   _ready = Promise.resolve();
   static get observedAttributes() {
-    return ["src", "xml", "cnd", "cnd-spec", "height", "title"];
+    return ["src", "xml", "cnd", "cnd-spec", "height", "layout-height", "title"];
   }
   constructor() {
     super();
@@ -86626,12 +86626,12 @@ class ForgeGraphElement extends HTMLElement {
       const [xml2, cnd] = await Promise.all([this.resolveXml(), this.resolveCnd()]);
       const rect = this.getBoundingClientRect();
       const width = Math.max(320, Math.round(rect.width || 800));
-      const height = Math.max(240, Math.round(rect.height || Number(this.getAttribute("height")) || 480));
+      const layoutHeight = Math.max(240, Math.round(Number(this.getAttribute("layout-height")) || Number(this.getAttribute("height")) || width * 0.56));
       const result = await renderForgeGraph({
         xml: xml2,
         cnd,
         width,
-        height,
+        layoutHeight,
         title: this.getAttribute("title") || "Forge graph"
       });
       if (serial !== this.renderSerial) {
@@ -86680,7 +86680,9 @@ class ForgeGraphElement extends HTMLElement {
   applyHeight() {
     const height = this.getAttribute("height");
     if (height) {
-      this.style.minHeight = /^\d+$/.test(height) ? `${height}px` : height;
+      this.style.height = /^\d+$/.test(height) ? `${height}px` : height;
+    } else {
+      this.style.removeProperty("height");
     }
   }
   async resolveXml() {
@@ -86721,12 +86723,9 @@ function elementCss() {
 		:host {
 			background: transparent;
 			display: block;
-			min-height: 480px;
-			overflow: hidden;
+			overflow: visible;
 		}
 		.frame {
-			height: 100%;
-			min-height: inherit;
 			position: relative;
 			width: 100%;
 		}
@@ -86735,9 +86734,8 @@ function elementCss() {
 			color: #666;
 			display: flex;
 			font: 12px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			inset: 0;
 			justify-content: center;
-			position: absolute;
+			min-height: 240px;
 		}
 		.status.error {
 			color: #b3261e;
@@ -86760,5 +86758,5 @@ export {
   DEFAULT_CND_SPEC
 };
 
-//# debugId=AE205D25161B9BAC64756E2164756E21
+//# debugId=A4FBD30E2AE6370364756E2164756E21
 //# sourceMappingURL=forge-graph.js.map
