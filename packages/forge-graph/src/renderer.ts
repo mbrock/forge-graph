@@ -151,7 +151,6 @@ function renderForgeGraphSvg(layout: SolvedForgeGraphLayout, bounds: BoundsBox, 
 }
 
 function renderEdges(layout: SolvedForgeGraphLayout): string {
-	const nodeBounds = layout.nodes.map((node) => nodeBox(node));
 	const arrowOptions: ArrowOptions = {
 		bow: 0.1,
 		stretch: 0.35,
@@ -173,8 +172,7 @@ function renderEdges(layout: SolvedForgeGraphLayout): string {
 		edgeGroups.set(key, [...(edgeGroups.get(key) || []), edge]);
 	}
 
-	const placedLabels: BoundsBox[] = [];
-	return layout.links.map((edge: any) => {
+	return layout.links.map((edge: any, index: number) => {
 		const source = edgeEndpoint(edge.source, layout.nodes);
 		const target = edgeEndpoint(edge.target, layout.nodes);
 		if (!source || !target) {
@@ -204,21 +202,19 @@ function renderEdges(layout: SolvedForgeGraphLayout): string {
 		);
 		const arrow: ArrowGeometry = { sx, sy, cx, cy, ex, ey, endAngle, laneOffset };
 		const label = edgeLabelForDisplay(edge);
-		const labelPlacement = label ? pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBounds) : undefined;
-		if (labelPlacement) {
-			placedLabels.push(labelPlacement.box);
-		}
 		const arrowAngle = endAngle * (180 / Math.PI);
+		const labelPathId = `forge-edge-label-${index}`;
+		const labelPath = labelPathD(arrow);
 		return `<g class="edge">
 			<path d="M${sx},${sy} Q${cx},${cy} ${ex},${ey}" />
 			<polygon points="0,-4 10,0 0,4" transform="translate(${ex},${ey}) rotate(${arrowAngle})" />
-			${labelPlacement ? `<text x="${labelPlacement.x}" y="${labelPlacement.y}">${escapeHtml(label)}</text>` : ''}
+			${label ? `<path id="${labelPathId}" class="edge-label-path" d="${labelPath}" />
+			<text dy="-5"><textPath href="#${labelPathId}" startOffset="50%">${escapeHtml(label)}</textPath></text>` : ''}
 		</g>`;
 	}).join('');
 }
 
 function edgeLabelBounds(layout: SolvedForgeGraphLayout): BoundsBox[] {
-	const nodeBounds = layout.nodes.map((node) => nodeBox(node));
 	const arrowOptions: ArrowOptions = {
 		bow: 0.1,
 		stretch: 0.35,
@@ -239,7 +235,7 @@ function edgeLabelBounds(layout: SolvedForgeGraphLayout): BoundsBox[] {
 		edgeGroups.set(key, [...(edgeGroups.get(key) || []), edge]);
 	}
 
-	const placedLabels: BoundsBox[] = [];
+	const labelBounds: BoundsBox[] = [];
 	for (const edge of layout.links as any[]) {
 		const source = edgeEndpoint(edge.source, layout.nodes);
 		const target = edgeEndpoint(edge.target, layout.nodes);
@@ -273,10 +269,10 @@ function edgeLabelBounds(layout: SolvedForgeGraphLayout): BoundsBox[] {
 		if (!label) {
 			continue;
 		}
-		const labelPlacement = pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBounds);
-		placedLabels.push(labelPlacement.box);
+		const point = quadraticPoint(arrow, 0.5);
+		labelBounds.push(labelBox(label, point.x, point.y - 5));
 	}
-	return placedLabels;
+	return labelBounds;
 }
 
 function renderNodes(layout: SolvedForgeGraphLayout): string {
@@ -312,6 +308,9 @@ export function forgeGraphSvgCss(): string {
 			stroke: currentColor;
 			stroke-width: 1.5;
 		}
+		.edge .edge-label-path {
+			stroke: none;
+		}
 		.edge polygon {
 			fill: currentColor;
 			stroke: none;
@@ -331,6 +330,9 @@ export function forgeGraphSvgCss(): string {
 			stroke-width: 5px;
 			text-anchor: middle;
 			text-transform: lowercase;
+		}
+		.edge textPath {
+			text-anchor: middle;
 		}
 		.node rect {
 			fill: #fff;
@@ -462,6 +464,14 @@ function nodeBox(node: any): BoundsBox {
 
 function edgeLabelForDisplay(edge: any): string {
 	return relationLabelForDisplay(String(edge.label ?? edge.relName ?? ''));
+}
+
+function labelPathD(arrow: ArrowGeometry): string {
+	const reverse = arrow.sx > arrow.ex || (arrow.sx === arrow.ex && arrow.sy > arrow.ey);
+	if (reverse) {
+		return `M${arrow.ex},${arrow.ey} Q${arrow.cx},${arrow.cy} ${arrow.sx},${arrow.sy}`;
+	}
+	return `M${arrow.sx},${arrow.sy} Q${arrow.cx},${arrow.cy} ${arrow.ex},${arrow.ey}`;
 }
 
 function edgePairKey(source: NodeWithMetadata, target: NodeWithMetadata): string {

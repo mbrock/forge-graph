@@ -86203,7 +86203,6 @@ function renderForgeGraphSvg(layout2, bounds, title = "Forge graph") {
 </svg>`;
 }
 function renderEdges(layout2) {
-  const nodeBounds = layout2.nodes.map((node) => nodeBox(node));
   const arrowOptions = {
     bow: 0.1,
     stretch: 0.35,
@@ -86223,8 +86222,7 @@ function renderEdges(layout2) {
     const key = edgePairKey(source, target);
     edgeGroups.set(key, [...edgeGroups.get(key) || [], edge]);
   }
-  const placedLabels = [];
-  return layout2.links.map((edge) => {
+  return layout2.links.map((edge, index3) => {
     const source = edgeEndpoint(edge.source, layout2.nodes);
     const target = edgeEndpoint(edge.target, layout2.nodes);
     if (!source || !target) {
@@ -86244,20 +86242,18 @@ function renderEdges(layout2) {
     });
     const arrow = { sx, sy, cx, cy, ex, ey, endAngle, laneOffset };
     const label = edgeLabelForDisplay(edge);
-    const labelPlacement = label ? pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBounds) : undefined;
-    if (labelPlacement) {
-      placedLabels.push(labelPlacement.box);
-    }
     const arrowAngle = endAngle * (180 / Math.PI);
+    const labelPathId = `forge-edge-label-${index3}`;
+    const labelPath = labelPathD(arrow);
     return `<g class="edge">
 			<path d="M${sx},${sy} Q${cx},${cy} ${ex},${ey}" />
 			<polygon points="0,-4 10,0 0,4" transform="translate(${ex},${ey}) rotate(${arrowAngle})" />
-			${labelPlacement ? `<text x="${labelPlacement.x}" y="${labelPlacement.y}">${escapeHtml2(label)}</text>` : ""}
+			${label ? `<path id="${labelPathId}" class="edge-label-path" d="${labelPath}" />
+			<text dy="-5"><textPath href="#${labelPathId}" startOffset="50%">${escapeHtml2(label)}</textPath></text>` : ""}
 		</g>`;
   }).join("");
 }
 function edgeLabelBounds(layout2) {
-  const nodeBounds = layout2.nodes.map((node) => nodeBox(node));
   const arrowOptions = {
     bow: 0.1,
     stretch: 0.35,
@@ -86277,7 +86273,7 @@ function edgeLabelBounds(layout2) {
     const key = edgePairKey(source, target);
     edgeGroups.set(key, [...edgeGroups.get(key) || [], edge]);
   }
-  const placedLabels = [];
+  const labelBounds = [];
   for (const edge of layout2.links) {
     const source = edgeEndpoint(edge.source, layout2.nodes);
     const target = edgeEndpoint(edge.target, layout2.nodes);
@@ -86301,10 +86297,10 @@ function edgeLabelBounds(layout2) {
     if (!label) {
       continue;
     }
-    const labelPlacement = pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBounds);
-    placedLabels.push(labelPlacement.box);
+    const point6 = quadraticPoint(arrow, 0.5);
+    labelBounds.push(labelBox(label, point6.x, point6.y - 5));
   }
-  return placedLabels;
+  return labelBounds;
 }
 function renderNodes(layout2) {
   return layout2.nodes.map((node) => {
@@ -86338,6 +86334,9 @@ function forgeGraphSvgCss() {
 			stroke: currentColor;
 			stroke-width: 1.5;
 		}
+		.edge .edge-label-path {
+			stroke: none;
+		}
 		.edge polygon {
 			fill: currentColor;
 			stroke: none;
@@ -86357,6 +86356,9 @@ function forgeGraphSvgCss() {
 			stroke-width: 5px;
 			text-anchor: middle;
 			text-transform: lowercase;
+		}
+		.edge textPath {
+			text-anchor: middle;
 		}
 		.node rect {
 			fill: #fff;
@@ -86467,6 +86469,13 @@ function nodeBox(node) {
 function edgeLabelForDisplay(edge) {
   return relationLabelForDisplay(String(edge.label ?? edge.relName ?? ""));
 }
+function labelPathD(arrow) {
+  const reverse2 = arrow.sx > arrow.ex || arrow.sx === arrow.ex && arrow.sy > arrow.ey;
+  if (reverse2) {
+    return `M${arrow.ex},${arrow.ey} Q${arrow.cx},${arrow.cy} ${arrow.sx},${arrow.sy}`;
+  }
+  return `M${arrow.sx},${arrow.sy} Q${arrow.cx},${arrow.cy} ${arrow.ex},${arrow.ey}`;
+}
 function edgePairKey(source, target) {
   const sourceId = String(source.id);
   const targetId = String(target.id);
@@ -86479,19 +86488,6 @@ function quadraticPoint(arrow, t) {
     y: inv * inv * arrow.sy + 2 * inv * t * arrow.cy + t * t * arrow.ey
   };
 }
-function quadraticDerivative(arrow, t) {
-  return {
-    x: 2 * (1 - t) * (arrow.cx - arrow.sx) + 2 * t * (arrow.ex - arrow.cx),
-    y: 2 * (1 - t) * (arrow.cy - arrow.sy) + 2 * t * (arrow.ey - arrow.cy)
-  };
-}
-function normalizeVector(point6) {
-  const length3 = Math.hypot(point6.x, point6.y);
-  if (!length3) {
-    return { x: 0, y: 0 };
-  }
-  return { x: point6.x / length3, y: point6.y / length3 };
-}
 function labelBox(label, x4, y4) {
   const width = Math.max(26, estimateTextWidth(label.toUpperCase(), 10, 0.67) + 12);
   const height = 15;
@@ -86501,56 +86497,6 @@ function labelBox(label, x4, y4) {
     width,
     height
   };
-}
-function overlapArea(a4, b) {
-  const x4 = Math.max(0, Math.min(a4.x + a4.width, b.x + b.width) - Math.max(a4.x, b.x));
-  const y4 = Math.max(0, Math.min(a4.y + a4.height, b.y + b.height) - Math.max(a4.y, b.y));
-  return x4 * y4;
-}
-function pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBoxes) {
-  const midCurve = quadraticPoint(arrow, 0.5);
-  const midLine = {
-    x: (arrow.sx + arrow.ex) / 2,
-    y: (arrow.sy + arrow.ey) / 2
-  };
-  const outside = normalizeVector({
-    x: midCurve.x - midLine.x,
-    y: midCurve.y - midLine.y
-  });
-  const fallbackNormal = normalizeVector({
-    x: -quadraticDerivative(arrow, 0.5).y,
-    y: quadraticDerivative(arrow, 0.5).x
-  });
-  const side = Math.hypot(outside.x, outside.y) > 0.001 ? outside : Math.hypot(fallbackNormal.x, fallbackNormal.y) > 0.001 ? fallbackNormal : { x: 0, y: -1 };
-  const laneDistance = 12 + Math.min(Math.abs(arrow.laneOffset), 3) * 5;
-  const tBase = Math.min(0.68, Math.max(0.32, 0.5 + arrow.laneOffset * 0.05));
-  const candidates = [
-    { t: tBase, offset: laneDistance },
-    { t: tBase - 0.08, offset: laneDistance },
-    { t: tBase + 0.08, offset: laneDistance },
-    { t: tBase, offset: laneDistance + 10 },
-    { t: tBase - 0.14, offset: laneDistance + 8 },
-    { t: tBase + 0.14, offset: laneDistance + 8 },
-    { t: tBase, offset: -laneDistance }
-  ];
-  let best;
-  let bestScore = Number.POSITIVE_INFINITY;
-  for (const candidate of candidates) {
-    const t = Math.min(0.75, Math.max(0.25, candidate.t));
-    const curvePoint = quadraticPoint(arrow, t);
-    const x4 = curvePoint.x + side.x * candidate.offset;
-    const y4 = curvePoint.y + side.y * candidate.offset;
-    const box = labelBox(label, x4, y4);
-    const labelOverlap = placedLabels.reduce((score3, placed) => score3 + overlapArea(box, placed) * 8, 0);
-    const nodeOverlap = nodeBoxes.reduce((score3, node) => score3 + overlapArea(box, node) * 14, 0);
-    const distancePenalty = Math.abs(t - 0.5) * 40 + Math.max(0, Math.abs(candidate.offset) - laneDistance) * 0.2;
-    const score2 = labelOverlap + nodeOverlap + distancePenalty;
-    if (score2 < bestScore) {
-      bestScore = score2;
-      best = { x: x4, y: y4, box };
-    }
-  }
-  return best || { x: midCurve.x, y: midCurve.y - laneDistance, box: labelBox(label, midCurve.x, midCurve.y - laneDistance) };
 }
 function layoutBounds(layout2) {
   const padding = 28;
@@ -86774,5 +86720,5 @@ export {
   DEFAULT_CND_SPEC
 };
 
-//# debugId=4C27E6870260295F64756E2164756E21
+//# debugId=564CA3EE6F78EA3E64756E2164756E21
 //# sourceMappingURL=forge-graph.js.map
