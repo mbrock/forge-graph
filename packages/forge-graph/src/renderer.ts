@@ -381,6 +381,10 @@ function labelForDisplay(label: string): string {
 		.replace(/([A-Za-z])([0-9])/g, '$1 $2');
 }
 
+function publicRelationLabel(label: string): string {
+	return label.replace(/-for-[A-Za-z0-9_]+-[A-Za-z0-9_]+$/, '');
+}
+
 function compactAtomLabel(label: string): string {
 	const normalized = String(label || '').replace(/\s+/g, '');
 	const match = /^(.+?)(\d+)$/.exec(normalized);
@@ -441,7 +445,7 @@ function nodeBox(node: any): BoundsBox {
 }
 
 function edgeLabelForDisplay(edge: any): string {
-	return labelForDisplay(String(edge.label ?? edge.relName ?? '')).toLowerCase();
+	return labelForDisplay(publicRelationLabel(String(edge.label ?? edge.relName ?? ''))).toLowerCase();
 }
 
 function edgePairKey(source: NodeWithMetadata, target: NodeWithMetadata): string {

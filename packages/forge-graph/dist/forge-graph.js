@@ -86396,6 +86396,9 @@ function extractLayoutYaml(cndSpec) {
 function labelForDisplay(label) {
   return label.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2").replace(/([A-Za-z])([0-9])/g, "$1 $2");
 }
+function publicRelationLabel(label) {
+  return label.replace(/-for-[A-Za-z0-9_]+-[A-Za-z0-9_]+$/, "");
+}
 function compactAtomLabel(label) {
   const normalized = String(label || "").replace(/\s+/g, "");
   const match = /^(.+?)(\d+)$/.exec(normalized);
@@ -86449,7 +86452,7 @@ function nodeBox(node) {
   };
 }
 function edgeLabelForDisplay(edge) {
-  return labelForDisplay(String(edge.label ?? edge.relName ?? "")).toLowerCase();
+  return labelForDisplay(publicRelationLabel(String(edge.label ?? edge.relName ?? ""))).toLowerCase();
 }
 function edgePairKey(source, target) {
   const sourceId = String(source.id);
@@ -86758,5 +86761,5 @@ export {
   DEFAULT_CND_SPEC
 };
 
-//# debugId=A4FBD30E2AE6370364756E2164756E21
+//# debugId=48C345D85FACD50A64756E2164756E21
 //# sourceMappingURL=forge-graph.js.map
