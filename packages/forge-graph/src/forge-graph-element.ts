@@ -176,7 +176,7 @@ async function fetchText(url: string): Promise<string> {
 function elementCss(): string {
 	return `
 		:host {
-			background: #fff;
+			background: transparent;
 			display: block;
 			min-height: 480px;
 			overflow: hidden;

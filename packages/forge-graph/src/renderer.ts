@@ -232,7 +232,7 @@ function renderNodes(layout: SolvedForgeGraphLayout): string {
 export function forgeGraphSvgCss(): string {
 	return `
 		.forge-graph-svg {
-			background: #fff;
+			background: transparent;
 			color: #141414;
 			display: block;
 			font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -261,7 +261,7 @@ export function forgeGraphSvgCss(): string {
 			letter-spacing: 0.075em;
 			paint-order: stroke;
 			pointer-events: none;
-			stroke: #fff;
+			stroke: rgba(255, 255, 255, 0.82);
 			stroke-linejoin: round;
 			stroke-width: 5px;
 			text-anchor: middle;

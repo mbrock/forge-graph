@@ -86271,7 +86271,7 @@ function renderNodes(layout2) {
 function forgeGraphSvgCss() {
   return `
 		.forge-graph-svg {
-			background: #fff;
+			background: transparent;
 			color: #141414;
 			display: block;
 			font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -86300,7 +86300,7 @@ function forgeGraphSvgCss() {
 			letter-spacing: 0.075em;
 			paint-order: stroke;
 			pointer-events: none;
-			stroke: #fff;
+			stroke: rgba(255, 255, 255, 0.82);
 			stroke-linejoin: round;
 			stroke-width: 5px;
 			text-anchor: middle;
@@ -86667,7 +86667,7 @@ async function fetchText(url) {
 function elementCss() {
   return `
 		:host {
-			background: #fff;
+			background: transparent;
 			display: block;
 			min-height: 480px;
 			overflow: hidden;
@@ -86708,5 +86708,5 @@ export {
   DEFAULT_CND_SPEC
 };
 
-//# debugId=A296405DA2036D5264756E2164756E21
+//# debugId=93CBBA58EC8F874564756E2164756E21
 //# sourceMappingURL=forge-graph.js.map
