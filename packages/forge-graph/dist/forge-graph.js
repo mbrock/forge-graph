@@ -86254,6 +86254,52 @@ function renderEdges(layout2) {
 		</g>`;
   }).join("");
 }
+function edgeLabelBounds(layout2) {
+  const nodeBounds = layout2.nodes.map((node) => nodeBox(node));
+  const arrowOptions = {
+    bow: 0.1,
+    stretch: 0.35,
+    stretchMin: 40,
+    stretchMax: 360,
+    padStart: 4,
+    padEnd: 12,
+    straights: true
+  };
+  const edgeGroups = new Map;
+  for (const edge of layout2.links) {
+    const source = edgeEndpoint(edge.source, layout2.nodes);
+    const target = edgeEndpoint(edge.target, layout2.nodes);
+    if (!source || !target) {
+      continue;
+    }
+    const key = edgePairKey(source, target);
+    edgeGroups.set(key, [...edgeGroups.get(key) || [], edge]);
+  }
+  const placedLabels = [];
+  for (const edge of layout2.links) {
+    const source = edgeEndpoint(edge.source, layout2.nodes);
+    const target = edgeEndpoint(edge.target, layout2.nodes);
+    if (!source || !target) {
+      continue;
+    }
+    const group2 = edgeGroups.get(edgePairKey(source, target)) || [edge];
+    const laneOffset = group2.indexOf(edge) - (group2.length - 1) / 2;
+    const directionSign = String(source.id) <= String(target.id) ? 1 : -1;
+    const laneSign = laneOffset === 0 ? directionSign : Math.sign(laneOffset) * directionSign;
+    const laneMagnitude = Math.abs(laneOffset) + (group2.length > 1 ? 0.3 : 0);
+    const sourceBox = nodeBox(source);
+    const targetBox = nodeBox(target);
+    const [sx, sy, cx, cy, ex, ey, endAngle] = getBoxToBoxArrow(sourceBox.x, sourceBox.y, sourceBox.width, sourceBox.height, targetBox.x, targetBox.y, targetBox.width, targetBox.height, {
+      ...arrowOptions,
+      bow: Math.min(0.28, (arrowOptions.bow || 0.1) + laneMagnitude * 0.08),
+      flip: laneSign < 0
+    });
+    const arrow = { sx, sy, cx, cy, ex, ey, endAngle, laneOffset };
+    const labelPlacement = pickEdgeLabelPlacement(arrow, edgeLabelForDisplay(edge), placedLabels, nodeBounds);
+    placedLabels.push(labelPlacement.box);
+  }
+  return placedLabels;
+}
 function renderNodes(layout2) {
   return layout2.nodes.map((node) => {
     const { x: x4, y: y4 } = nodeCenter(node);
@@ -86491,7 +86537,7 @@ function pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBoxes) {
   return best || { x: midCurve.x, y: midCurve.y - laneDistance, box: labelBox(label, midCurve.x, midCurve.y - laneDistance) };
 }
 function layoutBounds(layout2) {
-  const padding = 80;
+  const padding = 28;
   let minX = Number.POSITIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;
@@ -86503,6 +86549,12 @@ function layoutBounds(layout2) {
     minY = Math.min(minY, y4 - height / 2);
     maxX = Math.max(maxX, x4 + width / 2);
     maxY2 = Math.max(maxY2, y4 + height / 2);
+  }
+  for (const box of edgeLabelBounds(layout2)) {
+    minX = Math.min(minX, box.x);
+    minY = Math.min(minY, box.y);
+    maxX = Math.max(maxX, box.x + box.width);
+    maxY2 = Math.max(maxY2, box.y + box.height);
   }
   if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY2)) {
     return { x: 0, y: 0, width: layout2.width, height: layout2.height };
@@ -86708,5 +86760,5 @@ export {
   DEFAULT_CND_SPEC
 };
 
-//# debugId=93CBBA58EC8F874564756E2164756E21
+//# debugId=AE205D25161B9BAC64756E2164756E21
 //# sourceMappingURL=forge-graph.js.map

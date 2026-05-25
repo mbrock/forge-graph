@@ -214,6 +214,64 @@ function renderEdges(layout: SolvedForgeGraphLayout): string {
 	}).join('');
 }
 
+function edgeLabelBounds(layout: SolvedForgeGraphLayout): BoundsBox[] {
+	const nodeBounds = layout.nodes.map((node) => nodeBox(node));
+	const arrowOptions: ArrowOptions = {
+		bow: 0.1,
+		stretch: 0.35,
+		stretchMin: 40,
+		stretchMax: 360,
+		padStart: 4,
+		padEnd: 12,
+		straights: true,
+	};
+	const edgeGroups = new Map<string, any[]>();
+	for (const edge of layout.links as any[]) {
+		const source = edgeEndpoint(edge.source, layout.nodes);
+		const target = edgeEndpoint(edge.target, layout.nodes);
+		if (!source || !target) {
+			continue;
+		}
+		const key = edgePairKey(source, target);
+		edgeGroups.set(key, [...(edgeGroups.get(key) || []), edge]);
+	}
+
+	const placedLabels: BoundsBox[] = [];
+	for (const edge of layout.links as any[]) {
+		const source = edgeEndpoint(edge.source, layout.nodes);
+		const target = edgeEndpoint(edge.target, layout.nodes);
+		if (!source || !target) {
+			continue;
+		}
+		const group = edgeGroups.get(edgePairKey(source, target)) || [edge];
+		const laneOffset = group.indexOf(edge) - (group.length - 1) / 2;
+		const directionSign = String(source.id) <= String(target.id) ? 1 : -1;
+		const laneSign = laneOffset === 0 ? directionSign : Math.sign(laneOffset) * directionSign;
+		const laneMagnitude = Math.abs(laneOffset) + (group.length > 1 ? 0.3 : 0);
+		const sourceBox = nodeBox(source);
+		const targetBox = nodeBox(target);
+		const [sx, sy, cx, cy, ex, ey, endAngle] = getBoxToBoxArrow(
+			sourceBox.x,
+			sourceBox.y,
+			sourceBox.width,
+			sourceBox.height,
+			targetBox.x,
+			targetBox.y,
+			targetBox.width,
+			targetBox.height,
+			{
+				...arrowOptions,
+				bow: Math.min(0.28, (arrowOptions.bow || 0.1) + laneMagnitude * 0.08),
+				flip: laneSign < 0,
+			}
+		);
+		const arrow: ArrowGeometry = { sx, sy, cx, cy, ex, ey, endAngle, laneOffset };
+		const labelPlacement = pickEdgeLabelPlacement(arrow, edgeLabelForDisplay(edge), placedLabels, nodeBounds);
+		placedLabels.push(labelPlacement.box);
+	}
+	return placedLabels;
+}
+
 function renderNodes(layout: SolvedForgeGraphLayout): string {
 	return layout.nodes.map((node: any) => {
 		const { x, y } = nodeCenter(node);
@@ -491,7 +549,7 @@ function pickEdgeLabelPlacement(
 }
 
 function layoutBounds(layout: SolvedForgeGraphLayout): BoundsBox {
-	const padding = 80;
+	const padding = 28;
 	let minX = Number.POSITIVE_INFINITY;
 	let minY = Number.POSITIVE_INFINITY;
 	let maxX = Number.NEGATIVE_INFINITY;
@@ -504,6 +562,12 @@ function layoutBounds(layout: SolvedForgeGraphLayout): BoundsBox {
 		minY = Math.min(minY, y - height / 2);
 		maxX = Math.max(maxX, x + width / 2);
 		maxY = Math.max(maxY, y + height / 2);
+	}
+	for (const box of edgeLabelBounds(layout)) {
+		minX = Math.min(minX, box.x);
+		minY = Math.min(minY, box.y);
+		maxX = Math.max(maxX, box.x + box.width);
+		maxY = Math.max(maxY, box.y + box.height);
 	}
 
 	if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY)) {
