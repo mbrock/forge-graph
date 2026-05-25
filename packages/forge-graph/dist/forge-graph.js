@@ -86139,6 +86139,8 @@ function getBoxToBoxArrow(x06, y06, w0, h0, x12, y12, w1, h1, options) {
 }
 
 // src/renderer.ts
+var EDGE_LABEL_OFFSET = "22%";
+var EDGE_LABEL_T = 0.22;
 var DEFAULT_CND_SPEC = `directives:
   - flag: hideDisconnectedBuiltIns
 `;
@@ -86249,7 +86251,7 @@ function renderEdges(layout2) {
 			<path d="M${sx},${sy} Q${cx},${cy} ${ex},${ey}" />
 			<polygon points="0,-4 10,0 0,4" transform="translate(${ex},${ey}) rotate(${arrowAngle})" />
 			${label ? `<path id="${labelPathId}" class="edge-label-path" d="${labelPath}" />
-			<text dy="-5"><textPath href="#${labelPathId}" startOffset="50%">${escapeHtml2(label)}</textPath></text>` : ""}
+			<text dy="-5"><textPath href="#${labelPathId}" startOffset="${EDGE_LABEL_OFFSET}">${escapeHtml2(label)}</textPath></text>` : ""}
 		</g>`;
   }).join("");
 }
@@ -86297,7 +86299,7 @@ function edgeLabelBounds(layout2) {
     if (!label) {
       continue;
     }
-    const point6 = quadraticPoint(arrow, 0.5);
+    const point6 = labelPathPoint(arrow, EDGE_LABEL_T);
     labelBounds.push(labelBox(label, point6.x, point6.y - 5));
   }
   return labelBounds;
@@ -86475,6 +86477,10 @@ function labelPathD(arrow) {
     return `M${arrow.ex},${arrow.ey} Q${arrow.cx},${arrow.cy} ${arrow.sx},${arrow.sy}`;
   }
   return `M${arrow.sx},${arrow.sy} Q${arrow.cx},${arrow.cy} ${arrow.ex},${arrow.ey}`;
+}
+function labelPathPoint(arrow, t) {
+  const reverse2 = arrow.sx > arrow.ex || arrow.sx === arrow.ex && arrow.sy > arrow.ey;
+  return quadraticPoint(arrow, reverse2 ? 1 - t : t);
 }
 function edgePairKey(source, target) {
   const sourceId = String(source.id);
@@ -86720,5 +86726,5 @@ export {
   DEFAULT_CND_SPEC
 };
 
-//# debugId=564CA3EE6F78EA3E64756E2164756E21
+//# debugId=AD95DB21322C45B364756E2164756E21
 //# sourceMappingURL=forge-graph.js.map

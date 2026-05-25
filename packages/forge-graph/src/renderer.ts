@@ -66,6 +66,9 @@ interface LabelPlacement {
 	box: BoundsBox;
 }
 
+const EDGE_LABEL_OFFSET = '22%';
+const EDGE_LABEL_T = 0.22;
+
 export const DEFAULT_CND_SPEC = `directives:
   - flag: hideDisconnectedBuiltIns
 `;
@@ -209,7 +212,7 @@ function renderEdges(layout: SolvedForgeGraphLayout): string {
 			<path d="M${sx},${sy} Q${cx},${cy} ${ex},${ey}" />
 			<polygon points="0,-4 10,0 0,4" transform="translate(${ex},${ey}) rotate(${arrowAngle})" />
 			${label ? `<path id="${labelPathId}" class="edge-label-path" d="${labelPath}" />
-			<text dy="-5"><textPath href="#${labelPathId}" startOffset="50%">${escapeHtml(label)}</textPath></text>` : ''}
+			<text dy="-5"><textPath href="#${labelPathId}" startOffset="${EDGE_LABEL_OFFSET}">${escapeHtml(label)}</textPath></text>` : ''}
 		</g>`;
 	}).join('');
 }
@@ -269,7 +272,7 @@ function edgeLabelBounds(layout: SolvedForgeGraphLayout): BoundsBox[] {
 		if (!label) {
 			continue;
 		}
-		const point = quadraticPoint(arrow, 0.5);
+		const point = labelPathPoint(arrow, EDGE_LABEL_T);
 		labelBounds.push(labelBox(label, point.x, point.y - 5));
 	}
 	return labelBounds;
@@ -472,6 +475,11 @@ function labelPathD(arrow: ArrowGeometry): string {
 		return `M${arrow.ex},${arrow.ey} Q${arrow.cx},${arrow.cy} ${arrow.sx},${arrow.sy}`;
 	}
 	return `M${arrow.sx},${arrow.sy} Q${arrow.cx},${arrow.cy} ${arrow.ex},${arrow.ey}`;
+}
+
+function labelPathPoint(arrow: ArrowGeometry, t: number): Point {
+	const reverse = arrow.sx > arrow.ex || (arrow.sx === arrow.ex && arrow.sy > arrow.ey);
+	return quadraticPoint(arrow, reverse ? 1 - t : t);
 }
 
 function edgePairKey(source: NodeWithMetadata, target: NodeWithMetadata): string {
