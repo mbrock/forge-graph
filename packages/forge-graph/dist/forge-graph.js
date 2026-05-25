@@ -86244,13 +86244,15 @@ function renderEdges(layout2) {
     });
     const arrow = { sx, sy, cx, cy, ex, ey, endAngle, laneOffset };
     const label = edgeLabelForDisplay(edge);
-    const labelPlacement = pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBounds);
-    placedLabels.push(labelPlacement.box);
+    const labelPlacement = label ? pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBounds) : undefined;
+    if (labelPlacement) {
+      placedLabels.push(labelPlacement.box);
+    }
     const arrowAngle = endAngle * (180 / Math.PI);
     return `<g class="edge">
 			<path d="M${sx},${sy} Q${cx},${cy} ${ex},${ey}" />
 			<polygon points="0,-4 10,0 0,4" transform="translate(${ex},${ey}) rotate(${arrowAngle})" />
-			<text x="${labelPlacement.x}" y="${labelPlacement.y}">${escapeHtml2(label)}</text>
+			${labelPlacement ? `<text x="${labelPlacement.x}" y="${labelPlacement.y}">${escapeHtml2(label)}</text>` : ""}
 		</g>`;
   }).join("");
 }
@@ -86295,7 +86297,11 @@ function edgeLabelBounds(layout2) {
       flip: laneSign < 0
     });
     const arrow = { sx, sy, cx, cy, ex, ey, endAngle, laneOffset };
-    const labelPlacement = pickEdgeLabelPlacement(arrow, edgeLabelForDisplay(edge), placedLabels, nodeBounds);
+    const label = edgeLabelForDisplay(edge);
+    if (!label) {
+      continue;
+    }
+    const labelPlacement = pickEdgeLabelPlacement(arrow, label, placedLabels, nodeBounds);
     placedLabels.push(labelPlacement.box);
   }
   return placedLabels;
@@ -86399,6 +86405,13 @@ function labelForDisplay(label) {
 function publicRelationLabel(label) {
   return label.replace(/-for-[A-Za-z0-9_]+-[A-Za-z0-9_]+$/, "");
 }
+function relationLabelForDisplay(label) {
+  const publicLabel = publicRelationLabel(label);
+  if (publicLabel === "belongs-to") {
+    return "";
+  }
+  return labelForDisplay(publicLabel).replace(/[-_]+/g, " ").toLowerCase();
+}
 function compactAtomLabel(label) {
   const normalized = String(label || "").replace(/\s+/g, "");
   const match = /^(.+?)(\d+)$/.exec(normalized);
@@ -86452,7 +86465,7 @@ function nodeBox(node) {
   };
 }
 function edgeLabelForDisplay(edge) {
-  return labelForDisplay(publicRelationLabel(String(edge.label ?? edge.relName ?? ""))).toLowerCase();
+  return relationLabelForDisplay(String(edge.label ?? edge.relName ?? ""));
 }
 function edgePairKey(source, target) {
   const sourceId = String(source.id);
@@ -86761,5 +86774,5 @@ export {
   DEFAULT_CND_SPEC
 };
 
-//# debugId=48C345D85FACD50A64756E2164756E21
+//# debugId=4C27E6870260295F64756E2164756E21
 //# sourceMappingURL=forge-graph.js.map
